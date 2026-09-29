@@ -112,6 +112,7 @@ button {
   padding: clamp(3.5rem, 8vw, 7rem) var(--gutter);
   max-width: var(--max-width);
   margin: 0 auto;
+  scroll-margin-top: 96px;
 }
 
 .section__head {
@@ -123,9 +124,9 @@ button {
   color: var(--color-blue);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 0.85rem;
-  margin-bottom: 0.75rem;
+  letter-spacing: 0.14em;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .btn {
@@ -137,11 +138,17 @@ button {
   font-weight: 700;
   border: 2px solid transparent;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 200ms ease-out, box-shadow 200ms ease-out,
+    background 200ms ease-out;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 26px -14px rgba(11, 95, 165, 0.45);
+}
+
+.btn:active {
+  transform: translateY(0) scale(0.99);
 }
 
 .btn--solid {
@@ -157,6 +164,10 @@ button {
   background: transparent;
   border-color: var(--color-blue);
   color: var(--color-blue);
+}
+
+.btn--outline:hover {
+  box-shadow: 0 14px 26px -16px rgba(11, 95, 165, 0.3);
 }
 
 /* Nav */
@@ -261,7 +272,8 @@ button {
   border: 3px solid var(--color-white);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: none;
+  box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.18);
+  transition: box-shadow 300ms ease-out, background 300ms ease-out;
 }
 
 .scroll-rail__dots {
@@ -277,12 +289,14 @@ button {
   border-radius: 50%;
   background: var(--color-bg-alt);
   border: 2px solid var(--color-blue);
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background 250ms ease-out, border-color 250ms ease-out,
+    transform 250ms ease-out;
 }
 
 .scroll-rail__dot.is-active {
-  background: var(--color-blue);
-  transform: scale(1.3);
+  background: var(--color-cyan);
+  border-color: var(--color-cyan);
+  transform: scale(1.4);
 }
 
 .scroll-rail__label {
@@ -310,6 +324,16 @@ button {
 
 .hero__title {
   color: var(--color-blue-dark);
+  font-size: clamp(2.5rem, 5vw, 4.1rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.hero__lead {
+  font-size: 1.1rem;
+  max-width: 46ch;
+  color: var(--color-muted);
 }
 
 .hero__actions {
@@ -327,6 +351,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  perspective: 1000px;
 }
 
 @media (max-width: 880px) {
@@ -359,11 +384,20 @@ button {
   width: 100%;
   height: 100%;
   min-height: 260px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.physio3d__defs {
+  position: absolute;
+  width: 0;
+  height: 0;
 }
 
 .physio3d__back,
 .physio3d__mid,
-.physio3d__front {
+.physio3d__front,
+.physio3d__shadow {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -412,7 +446,7 @@ button {
 
 .service-card {
   background: var(--color-white);
-  border: 2px solid var(--color-bg-alt);
+  border: 1px solid rgba(11, 95, 165, 0.08);
   border-radius: var(--radius);
   padding: 1.75rem 1.25rem;
   display: flex;
@@ -421,6 +455,7 @@ button {
   font-weight: 700;
   color: var(--color-blue-dark);
   cursor: default;
+  box-shadow: 0 4px 18px -14px rgba(11, 95, 165, 0.18);
   transition: transform 200ms ease-out, box-shadow 200ms ease-out,
     border-color 200ms ease-out;
 }
@@ -428,8 +463,8 @@ button {
 .service-card:hover,
 .service-card:focus-within {
   transform: scale(1.04);
-  border-color: var(--color-cyan);
-  box-shadow: 0 12px 28px -16px rgba(11, 95, 165, 0.35);
+  border-color: rgba(0, 180, 216, 0.5);
+  box-shadow: 0 22px 40px -20px rgba(11, 95, 165, 0.32);
 }
 
 .service-card__icon {
@@ -463,12 +498,17 @@ button {
   align-items: center;
 }
 
-.about__image {
+.about__image-wrap {
   border-radius: var(--radius);
+  overflow: hidden;
+  height: 460px;
+}
+
+.about__image {
   width: 100%;
-  height: 100%;
+  height: calc(100% + 60px);
   object-fit: cover;
-  max-height: 460px;
+  margin-top: -30px;
 }
 
 .about__points li {
@@ -505,10 +545,11 @@ button {
 
 .testimonial-card {
   background: var(--color-white);
-  border: 2px solid var(--color-bg-alt);
+  border: 1px solid rgba(11, 95, 165, 0.08);
   border-radius: var(--radius);
   padding: 1.75rem;
   cursor: default;
+  box-shadow: 0 4px 18px -14px rgba(11, 95, 165, 0.18);
   transition: transform 200ms ease-out, box-shadow 200ms ease-out,
     border-color 200ms ease-out;
 }
@@ -516,8 +557,8 @@ button {
 .testimonial-card:hover,
 .testimonial-card:focus-within {
   transform: scale(1.04);
-  border-color: var(--color-cyan);
-  box-shadow: 0 12px 28px -16px rgba(11, 95, 165, 0.35);
+  border-color: rgba(0, 180, 216, 0.5);
+  box-shadow: 0 22px 40px -20px rgba(11, 95, 165, 0.32);
 }
 
 .testimonial-card__quote {
@@ -557,11 +598,19 @@ button {
   padding: 2rem;
 }
 
-.team__photo {
+.team__photo-wrap {
   width: 160px;
   height: 160px;
-  object-fit: cover;
   border-radius: var(--radius);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.team__photo {
+  width: 100%;
+  height: calc(100% + 36px);
+  object-fit: cover;
+  margin-top: -18px;
 }
 
 .team__role {
