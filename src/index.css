@@ -13,6 +13,24 @@
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --max-width: 1180px;
   --font: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Paleta ORYZO adaptada — exclusiva del hero / Product Reveal.
+     No reemplaza los tokens de arriba (nav, cards, testimonios, form
+     siguen usando --color-blue/--color-cyan sin tocar). */
+  --color-oryzo-canvas: #ffffff;
+  --color-oryzo-surface: #d8edfa; /* azul claro — superficie elevada */
+  --color-oryzo-surface-strong: #a9d9f2; /* azul claro, paso de botón/hover */
+  --color-oryzo-green: #178049; /* verde claro — acento puntual, uso moderado (AA 4.98:1 sobre blanco) */
+  --color-oryzo-green-soft: #e4f7eb;
+  --color-oryzo-navy: #0a2540; /* texto de cuerpo y headings del hero */
+  --color-oryzo-divider: #c9dbe6;
+
+  /* Escala tipográfica ORYZO (sustituto Manrope por Halyard/Inter/Söhne) */
+  --text-oryzo-subheading: 18px;
+  --text-oryzo-heading-sm: 24px;
+  --text-oryzo-body: clamp(1.15rem, 1.6vw + 0.6rem, 29px);
+  --text-oryzo-heading: clamp(2rem, 3.2vw + 1rem, 41px);
+  --text-oryzo-display: clamp(2.3rem, 3.6vw + 1.2rem, 51px);
 }
 
 * {
@@ -44,6 +62,7 @@ body {
   background: var(--color-bg);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 h1,
@@ -313,50 +332,191 @@ button {
   }
 }
 
-/* Hero */
-.hero {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 3rem;
+/* Hero — Product Reveal (adaptado de ORYZO): full-bleed, 100vh,
+   tres columnas (heading / objeto 3D / body copy), gutters de 18px. */
+.oryzo-subheading {
+  font-size: var(--text-oryzo-subheading);
+  line-height: 1;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  color: var(--color-oryzo-navy);
+}
+
+.oryzo-heading-sm {
+  font-size: var(--text-oryzo-heading-sm);
+  line-height: 1.09;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-oryzo-navy);
+}
+
+.oryzo-body {
+  font-size: var(--text-oryzo-body);
+  line-height: 1.26;
+  font-weight: 400;
+  color: var(--color-oryzo-navy);
+}
+
+.oryzo-heading {
+  font-size: var(--text-oryzo-heading);
+  line-height: 0.9;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-oryzo-navy);
+}
+
+.oryzo-display {
+  font-size: var(--text-oryzo-display);
+  line-height: 0.9;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-oryzo-navy);
+}
+
+.oryzo-btn {
+  display: inline-flex;
   align-items: center;
-  padding-top: clamp(2.5rem, 6vw, 5rem);
+  justify-content: center;
+  padding: 14px 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 200ms ease-out, background 200ms ease-out,
+    box-shadow 200ms ease-out;
 }
 
-.hero__title {
-  color: var(--color-blue-dark);
-  font-size: clamp(2.5rem, 5vw, 4.1rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+.oryzo-btn--pill {
+  border-radius: 36px;
+  background: var(--color-oryzo-surface);
+  color: var(--color-oryzo-navy);
+  border: none;
 }
 
-.hero__lead {
-  font-size: 1.1rem;
-  max-width: 46ch;
-  color: var(--color-muted);
+.oryzo-btn--pill:hover {
+  background: var(--color-oryzo-surface-strong);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 26px -16px rgba(10, 37, 64, 0.35);
 }
 
-.hero__actions {
+.oryzo-btn--outline {
+  border-radius: 22.5px;
+  background: transparent;
+  border: 1px solid var(--color-oryzo-navy);
+  color: var(--color-oryzo-navy);
+  padding: 13px 24px;
+}
+
+.oryzo-btn--outline:hover {
+  background: var(--color-oryzo-green-soft);
+  border-color: var(--color-oryzo-green);
+  transform: translateY(-2px);
+}
+
+.hero-reveal {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  min-height: 100vh;
   display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  align-items: center;
+  background: var(--color-oryzo-canvas);
+  padding: 96px 18px 48px;
+  scroll-margin-top: 0;
+}
+
+@media (min-width: 721px) {
+  .hero-reveal {
+    /* deja hueco a la derecha para el carril de scroll fijo */
+    padding-right: 96px;
+  }
+}
+
+.hero-reveal__grid {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 420px) 1fr;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.hero-reveal__col--left {
+  text-align: left;
+}
+
+.hero-reveal__eyebrow {
+  margin-bottom: var(--spacing-18, 18px);
+  color: var(--color-oryzo-navy);
+}
+
+.hero-reveal__title {
+  margin: 0 0 24px;
+}
+
+.hero-reveal__title .underline-word {
+  color: var(--color-oryzo-navy);
+}
+
+.hero-reveal__title .underline-word__stroke {
+  background: var(--color-oryzo-surface-strong);
+}
+
+.hero-reveal__actions {
+  display: flex;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.hero__visual {
-  background: var(--color-bg-alt);
-  border-radius: var(--radius);
-  padding: 2rem;
-  aspect-ratio: 1 / 1;
+.hero-reveal__object {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 1000px;
+  aspect-ratio: 1 / 1;
+  width: 100%;
 }
 
-@media (max-width: 880px) {
-  .hero {
+.hero-reveal__col--right {
+  text-align: left;
+}
+
+.hero-reveal__lead {
+  margin: 0;
+}
+
+.hero-reveal__credit {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-oryzo-green);
+}
+
+.dashed-divider {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  border-top: 1px dashed var(--color-oryzo-divider);
+}
+
+@media (max-width: 1000px) {
+  .hero-reveal__grid {
     grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .hero-reveal__col--left,
+  .hero-reveal__col--right {
+    text-align: center;
+  }
+
+  .hero-reveal__actions {
+    justify-content: center;
+  }
+
+  .hero-reveal__object {
+    max-width: 340px;
+    margin: 24px auto;
   }
 }
 
@@ -397,11 +557,17 @@ button {
 .physio3d__back,
 .physio3d__mid,
 .physio3d__front,
-.physio3d__shadow {
+.physio3d__shadow,
+.physio3d__sheen {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.physio3d__sheen {
+  pointer-events: none;
+  mix-blend-mode: soft-light;
 }
 
 /* Stats */

@@ -4,6 +4,7 @@ import { useLang } from "../context/LangContext";
 import AnimatedUnderline from "./AnimatedUnderline";
 import Physio3D from "./Physio3D";
 import { usePrefersReducedMotion } from "../hooks/useReducedMotion";
+import { business } from "../data/content";
 
 const textStagger = {
   hidden: {},
@@ -21,14 +22,14 @@ const textItem = {
   },
 };
 
+// Layout "Product Reveal": full-bleed 100vh, tres columnas (heading /
+// objeto 3D central / body copy), separadas por gutters de 18px — patrón
+// adaptado de la referencia ORYZO, con la paleta clara de Clínica Avenida.
 export default function Hero() {
   const { t } = useLang();
   const reduced = usePrefersReducedMotion();
   const sectionRef = useRef(null);
 
-  // El objeto 3D reacciona de forma continua (no a saltos) a medida que el
-  // héroe se desplaza fuera de la vista hacia "Nuestros servicios": rota,
-  // escala levemente y el fondo del panel vira de blanco a azul-grisáceo.
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -41,50 +42,73 @@ export default function Hero() {
 
   const rotate = useTransform(smoothProgress, [0, 1], [0, 10]);
   const scale = useTransform(smoothProgress, [0, 1], [1, 1.08]);
-  const panelBg = useTransform(
-    smoothProgress,
-    [0, 1],
-    ["#eaf6fb", "#dbe6f2"]
-  );
 
   return (
-    <section id="inicio" className="section hero" ref={sectionRef}>
-      <motion.div
-        className="hero__copy"
-        variants={reduced ? undefined : textStagger}
-        initial={reduced ? undefined : "hidden"}
-        animate={reduced ? undefined : "show"}
-      >
-        <motion.p className="eyebrow" variants={reduced ? undefined : textItem}>
-          {t.hero.eyebrow}
-        </motion.p>
-        <motion.h1 className="hero__title" variants={reduced ? undefined : textItem}>
-          {t.hero.title1}
-          <br />
-          <AnimatedUnderline>{t.hero.title2}</AnimatedUnderline>
-        </motion.h1>
-        <motion.p className="hero__lead" variants={reduced ? undefined : textItem}>
-          {t.hero.copy}
-        </motion.p>
-        <motion.div className="hero__actions" variants={reduced ? undefined : textItem}>
-          <a href="#contacto" className="btn btn--solid">
-            {t.hero.cta}
-          </a>
-          <a href="#servicios" className="btn btn--outline">
-            {t.hero.ctaSecondary}
-          </a>
-        </motion.div>
-      </motion.div>
+    <>
+      <section id="inicio" className="hero-reveal" ref={sectionRef}>
+        <motion.div
+          className="hero-reveal__grid"
+          variants={reduced ? undefined : textStagger}
+          initial={reduced ? undefined : "hidden"}
+          animate={reduced ? undefined : "show"}
+        >
+          <div className="hero-reveal__col hero-reveal__col--left">
+            <motion.p
+              className="oryzo-subheading hero-reveal__eyebrow"
+              variants={reduced ? undefined : textItem}
+            >
+              {t.hero.eyebrow}
+            </motion.p>
+            <motion.h1
+              className="oryzo-display hero-reveal__title"
+              variants={reduced ? undefined : textItem}
+            >
+              {t.hero.title1}
+              <br />
+              <AnimatedUnderline>{t.hero.title2}</AnimatedUnderline>
+            </motion.h1>
+            <motion.div
+              className="hero-reveal__actions"
+              variants={reduced ? undefined : textItem}
+            >
+              <a href="#contacto" className="oryzo-btn oryzo-btn--pill">
+                {t.hero.cta}
+              </a>
+              <a href="#servicios" className="oryzo-btn oryzo-btn--outline">
+                {t.hero.ctaSecondary}
+              </a>
+            </motion.div>
+          </div>
 
-      <motion.div
-        className="hero__visual"
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
-        style={reduced ? undefined : { backgroundColor: panelBg }}
-      >
-        <Physio3D rotate={reduced ? undefined : rotate} scale={reduced ? undefined : scale} />
-      </motion.div>
-    </section>
+          <motion.div
+            className="hero-reveal__object"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.65, 0, 0.35, 1] }}
+          >
+            <Physio3D
+              rotate={reduced ? undefined : rotate}
+              scale={reduced ? undefined : scale}
+            />
+          </motion.div>
+
+          <div className="hero-reveal__col hero-reveal__col--right">
+            <motion.p
+              className="oryzo-body hero-reveal__lead"
+              variants={reduced ? undefined : textItem}
+            >
+              {t.hero.copy}
+            </motion.p>
+            <motion.p
+              className="hero-reveal__credit"
+              variants={reduced ? undefined : textItem}
+            >
+              — {business.name}, {business.city}
+            </motion.p>
+          </div>
+        </motion.div>
+      </section>
+      <div className="dashed-divider" aria-hidden="true" />
+    </>
   );
 }

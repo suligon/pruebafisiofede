@@ -1,19 +1,28 @@
-import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "motion/react";
 import { usePrefersReducedMotion } from "../hooks/useReducedMotion";
 
-// Ilustración "3D" en Flat Design con sombreado suave tipo subsurface-
-// scattering (gradientes radiales, luz difusa) + sombra de contacto, en
-// capas con paralaje al mover el ratón. `rotate` y `scale` llegan como
-// motion values ligados al scroll (ver Hero.jsx) para que el conjunto
-// reaccione de forma continua, no con una animación de entrada estática.
+// Ilustración "3D" del fisioterapeuta con el tratamiento de luz de la
+// referencia ORYZO: luz cálida difusa desde arriba-derecha, sombra de
+// contacto, y una reacción de iluminación (sheen) al pasar el ratón además
+// del paralaje por capas. `rotate`/`scale` llegan ligados al scroll.
 export default function Physio3D({ rotate, scale }) {
   const reduced = usePrefersReducedMotion();
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
+  const hoverTarget = useMotionValue(0);
 
   const spring = { stiffness: 90, damping: 18, mass: 0.9 };
   const sx = useSpring(mx, spring);
   const sy = useSpring(my, spring);
+  const sheenOpacity = useSpring(hoverTarget, {
+    stiffness: 140,
+    damping: 20,
+  });
 
   const layerBack = {
     x: useTransform(sx, [-1, 1], [-8, 8]),
@@ -37,14 +46,21 @@ export default function Physio3D({ rotate, scale }) {
     my.set(py * 2);
   }
 
+  function handleEnter() {
+    if (reduced) return;
+    hoverTarget.set(1);
+  }
+
   function handleLeave() {
     mx.set(0);
     my.set(0);
+    hoverTarget.set(0);
   }
 
   return (
     <motion.div
       className="physio3d"
+      onMouseEnter={handleEnter}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
       role="img"
@@ -53,28 +69,33 @@ export default function Physio3D({ rotate, scale }) {
     >
       <svg viewBox="0 0 520 520" className="physio3d__defs" aria-hidden="true">
         <defs>
-          {/* Luz difusa superior-izquierda sobre el círculo de fondo */}
-          <radialGradient id="p3d-bg" cx="38%" cy="30%" r="75%">
-            <stop offset="0%" stopColor="#5fd6ec" />
-            <stop offset="55%" stopColor="var(--color-cyan)" />
-            <stop offset="100%" stopColor="#0090ab" />
+          {/* Luz cálida difusa desde arriba-derecha sobre el círculo de fondo */}
+          <radialGradient id="p3d-bg" cx="68%" cy="26%" r="78%">
+            <stop offset="0%" stopColor="#f4fbff" />
+            <stop offset="55%" stopColor="var(--color-oryzo-surface)" />
+            <stop offset="100%" stopColor="var(--color-oryzo-surface-strong)" />
           </radialGradient>
-          {/* Sombreado tipo subsurface-scattering sobre el fisioterapeuta */}
-          <radialGradient id="p3d-blue" cx="35%" cy="25%" r="85%">
-            <stop offset="0%" stopColor="#3f8fce" />
-            <stop offset="45%" stopColor="var(--color-blue)" />
-            <stop offset="100%" stopColor="#063a63" />
+          {/* Fisioterapeuta: azul claro con relieve suave */}
+          <radialGradient id="p3d-blue" cx="66%" cy="22%" r="90%">
+            <stop offset="0%" stopColor="#eaf6ff" />
+            <stop offset="45%" stopColor="var(--color-oryzo-surface-strong)" />
+            <stop offset="100%" stopColor="var(--color-oryzo-navy)" />
           </radialGradient>
-          {/* Sombreado suave sobre el paciente (tonos casi blancos) */}
-          <radialGradient id="p3d-white" cx="35%" cy="25%" r="85%">
+          {/* Paciente: tonos casi blancos */}
+          <radialGradient id="p3d-white" cx="66%" cy="22%" r="90%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="60%" stopColor="#eaf6fb" />
-            <stop offset="100%" stopColor="#c7e3ee" />
+            <stop offset="60%" stopColor="#f3fbf6" />
+            <stop offset="100%" stopColor="var(--color-oryzo-green-soft)" />
           </radialGradient>
-          {/* Sombra de contacto difusa debajo de las figuras */}
+          {/* Sombra de contacto difusa */}
           <radialGradient id="p3d-contact" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(6,40,68,0.38)" />
-            <stop offset="100%" stopColor="rgba(6,40,68,0)" />
+            <stop offset="0%" stopColor="rgba(10,37,64,0.3)" />
+            <stop offset="100%" stopColor="rgba(10,37,64,0)" />
+          </radialGradient>
+          {/* Sheen cálido que aparece en hover */}
+          <radialGradient id="p3d-sheen" cx="72%" cy="18%" r="55%">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+            <stop offset="100%" stopColor="rgba(255,255,255,0)" />
           </radialGradient>
         </defs>
       </svg>
@@ -126,8 +147,29 @@ export default function Physio3D({ rotate, scale }) {
             fill="url(#p3d-blue)"
             transform="rotate(-18 206 213)"
           />
+          {/* filo de luz verde, detalle puntual al hover */}
+          <motion.circle
+            cx="170"
+            cy="140"
+            r="38"
+            fill="none"
+            stroke="var(--color-oryzo-green)"
+            strokeWidth="2"
+            style={{ opacity: reduced ? 0 : sheenOpacity }}
+          />
         </g>
       </motion.svg>
+
+      {!reduced && (
+        <motion.svg
+          viewBox="0 0 520 520"
+          className="physio3d__sheen"
+          style={{ opacity: sheenOpacity }}
+          aria-hidden="true"
+        >
+          <circle cx="260" cy="260" r="220" fill="url(#p3d-sheen)" />
+        </motion.svg>
+      )}
     </motion.div>
   );
 }
